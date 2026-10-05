@@ -1,18 +1,97 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import RabbitCard from "@/components/RabbitCard";
-import { getAvailableRabbits } from "@/lib/rabbit-service";
+import { formatThaiDate } from "@/lib/rabbit-display";
+import {
+  getLatestAdoptedRabbits,
+  getLatestAvailableRabbits,
+} from "@/lib/rabbit-service";
 
 export default async function Home() {
-  const rabbits = await getAvailableRabbits();
+  const [latestAdopted, latestAvailable] = await Promise.all([
+    getLatestAdoptedRabbits(1),
+    getLatestAvailableRabbits(6),
+  ]);
+
+  const featured = latestAdopted[0];
 
   return (
-    <main className="">
-      <h1 className="text-3xl font-bold mb-6">Safe Rabbit Project 🐰</h1>
+    <div className="space-y-24">
+      <section className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+        <div className="space-y-6">
+          <span className="inline-block rounded-full bg-carrot-soft px-3 py-1 text-xs font-medium text-carrot-dark">
+            Safe Rabbit Project
+          </span>
+          <h1 className="font-heading text-4xl font-semibold leading-tight text-ink md:text-5xl">
+            ทุกตัวควรได้มีบ้าน
+            <br />
+            ที่<span className="text-carrot">ปลอดภัย</span>
+          </h1>
+          <p className="max-w-md leading-relaxed text-muted">
+            คาเฟ่กระต่ายที่ดูแลน้องที่ถูกทิ้งหรือไม่มีที่ไป
+            พักฟื้น และช่วยหาครอบครัวใหม่ที่พร้อมดูแลตลอดชีวิต
+          </p>
+          <Link
+            href="/rabbits"
+            className="inline-block rounded-full bg-carrot px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-carrot-dark"
+          >
+            ดูน้องที่กำลังหาบ้าน
+          </Link>
+        </div>
 
-      <div className="space-y-4">
-        {rabbits.map((rabbit) => (
-          <RabbitCard key={rabbit.id} rabbit={rabbit} />
-        ))}
-      </div>
-    </main>
+        {featured ? (
+          <Link
+            href={`/rabbits/${featured.id}`}
+            className="group block rounded-3xl border border-line bg-white p-3 shadow-sm"
+          >
+            <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-cream">
+              <Image
+                src={featured.coverImage || "/placeholder-rabbit.jpg"}
+                alt={`รูปของ ${featured.name}`}
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="flex items-baseline justify-between gap-4 px-2 pb-1 pt-3">
+              <p className="text-sm text-muted">
+                ได้บ้านล่าสุด · <span className="text-ink">{featured.name}</span>
+              </p>
+              <p className="text-xs text-muted">{formatThaiDate(featured.adoptedDate)}</p>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex aspect-4/3 items-center justify-center rounded-3xl border border-line bg-cream text-sm text-muted">
+            ยังไม่มีน้องที่ได้บ้านล่าสุด
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-8">
+        <div className="text-center">
+          <p className="text-sm font-medium text-carrot">หาบ้าน</p>
+          <h2 className="mt-1 font-heading text-3xl font-semibold text-ink">
+            น้องๆ ที่กำลังรอครอบครัว
+          </h2>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {latestAvailable.map((rabbit) => (
+            <RabbitCard key={rabbit.id} rabbit={rabbit} />
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link
+            href="/rabbits"
+            className="inline-block rounded-full border border-line bg-white px-6 py-3 text-sm text-brown shadow-sm transition hover:border-carrot hover:text-carrot-dark"
+          >
+            ดูทั้งหมด
+          </Link>
+        </div>
+      </section>
+    </div>
   );
 }

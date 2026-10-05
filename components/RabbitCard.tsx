@@ -1,3 +1,11 @@
+import Image from "next/image";
+import Link from "next/link";
+
+import {
+  formatAgeMonth,
+  getRabbitGenderLabel,
+  getRabbitStatusLabel,
+} from "@/lib/rabbit-display";
 import type { Rabbit } from "@/types/rabbit";
 
 interface RabbitCardProps {
@@ -5,38 +13,32 @@ interface RabbitCardProps {
 }
 
 export default function RabbitCard({ rabbit }: RabbitCardProps) {
-  const statusColor: Record<Rabbit["status"], string> = {
-    available: "bg-green-100 text-green-700",
-    adopted: "bg-gray-100 text-gray-700",
-    sponsored: "bg-yellow-100 text-yellow-700",
-    cafe_staff: "bg-blue-100 text-blue-700",
-    passed_away: "bg-red-100 text-red-700",
-  };
-
   return (
-    <div className="border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
-      {/* IMAGE */}
-      <img
-        src={rabbit.coverImage || "/placeholder-rabbit.jpg"}
-        alt={rabbit.name}
-        className="w-full h-48 object-cover"
-      />
+    <Link
+      href={`/rabbits/${rabbit.id}`}
+      className="group block rounded-3xl border border-line bg-white p-3 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+    >
+      <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-cream">
+        <Image
+          src={rabbit.coverImage || "/placeholder-rabbit.jpg"}
+          alt={`รูปของ ${rabbit.name}`}
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
+        />
 
-      {/* CONTENT */}
-      <div className="p-4 space-y-2">
-        <h2 className="text-xl font-bold">{rabbit.name}</h2>
-
-        <span
-          className={`inline-block px-2 py-1 text-xs rounded-full ${statusColor[rabbit.status]}`}
-        >
-          {rabbit.status}
+        <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-medium text-carrot-dark shadow-sm">
+          {getRabbitStatusLabel(rabbit.status)}
         </span>
-
-        <p>Gender: {rabbit.gender}</p>
-        <p>Age: {rabbit.ageMonth} months</p>
-
-        <p className="italic text-gray-600">{rabbit.motto}</p>
       </div>
-    </div>
+
+      <div className="space-y-1 px-2 pb-2 pt-4">
+        <h3 className="font-heading text-lg font-medium text-ink">{rabbit.name}</h3>
+        <p className="text-sm text-muted">
+          {getRabbitGenderLabel(rabbit.gender)} · {formatAgeMonth(rabbit.ageMonth)}
+        </p>
+        <p className="line-clamp-1 pt-1 text-sm text-brown">“{rabbit.motto}”</p>
+      </div>
+    </Link>
   );
 }

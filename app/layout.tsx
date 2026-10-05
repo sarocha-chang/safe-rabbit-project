@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Sans_Thai, Prompt } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/Navbar";
+
+const plexThai = IBM_Plex_Sans_Thai({
+  subsets: ["thai", "latin"],
+  variable: "--font-plex-thai",
+  weight: ["300", "400", "500", "600"],
+});
+
+const prompt = Prompt({
+  subsets: ["thai", "latin"],
+  variable: "--font-prompt",
+  weight: ["400", "500", "600"],
+});
 
 export const metadata: Metadata = {
   title: "Safe Rabbit Project",
@@ -14,10 +27,12 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="th" className={`${plexThai.variable} ${prompt.variable}`}>
+      <body className="bg-white font-sans text-ink">
         <Navbar />
-        <main className="max-w-7xl mx-auto px-6 py-8">{children}</main>{" "}
+        <main className="mx-auto w-full max-w-6xl px-5 py-12 md:px-8 md:py-16">
+          {children}
+        </main>
       </body>
     </html>
   );
