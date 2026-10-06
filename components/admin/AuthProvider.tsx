@@ -7,9 +7,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { auth } from "@/lib/firebase-auth";
 
+export type AdminRole = "owner" | "demo";
+
 interface AuthState {
   user: User | null;
   isAdmin: boolean;
+  role: AdminRole | null;
   loading: boolean;
   logout: () => Promise<void>;
 }
@@ -17,6 +20,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState>({
   user: null,
   isAdmin: false,
+  role: null,
   loading: true,
   logout: async () => {},
 });
@@ -28,6 +32,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState<AdminRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,6 +42,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!currentUser) {
         setIsAdmin(false);
+        setRole(null);
         setLoading(false);
         return;
       }
@@ -44,8 +50,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const adminDoc = await getDoc(doc(db, "admins", currentUser.uid));
         setIsAdmin(adminDoc.exists());
+        setRole(adminDoc.exists() ? (adminDoc.data().role ?? null) : null);
       } catch {
         setIsAdmin(false);
+        setRole(null);
       }
 
       setLoading(false);
@@ -59,7 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, logout }}>
+    <AuthContext.Provider value={{ user, isAdmin, role, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

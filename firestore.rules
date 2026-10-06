@@ -7,6 +7,15 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    function isOwner() {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "owner";
+    }
+
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
     function isShortText(value, maxLength) {
       return value is string && value.size() > 0 && value.size() <= maxLength;
     }
@@ -36,7 +45,11 @@ service cloud.firestore {
 
     match /rabbits/{rabbitId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow create, delete: if isOwner();
+      allow update: if isOwner()
+        || (isAdmin()
+          && onlyChanges(["status", "adoptedDate", "updatedAt"])
+          && request.resource.data.status in ["available", "sponsored", "adopted"]);
     }
 
     match /admins/{uid} {
@@ -46,7 +59,16 @@ service cloud.firestore {
 
     match /applications/{applicationId} {
       allow create: if isValidNewApplication(request.resource.data);
-      allow read, update, delete: if isAdmin();
+      allow read: if isAdmin();
+      allow update: if isOwner()
+        || (isAdmin()
+          && onlyChanges(["status", "reviewedAt", "autoRejected"])
+          && request.resource.data.status in ["approved", "rejected"]);
+      allow delete: if isOwner();
+    }
+
+    match /demoDefaults/{rabbitId} {
+      allow read, write: if isOwner();
     }
   }
 }

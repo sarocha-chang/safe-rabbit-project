@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { useAuth } from "@/components/admin/AuthProvider";
 import FormField, { inputClassName } from "@/components/FormField";
+import { demoAccount } from "@/lib/demo-account";
 import { auth } from "@/lib/firebase-auth";
 
 interface LoginFormValues {
@@ -32,12 +33,28 @@ export default function AdminLoginPage() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
   const [loginError, setLoginError] = useState("");
+  const [useDemo, setUseDemo] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>();
+
+  const hasDemoAccount =
+    demoAccount.email !== "" && demoAccount.password !== "";
+
+  function toggleDemo(checked: boolean) {
+    setUseDemo(checked);
+    setLoginError("");
+    setValue("email", checked ? demoAccount.email : "", {
+      shouldValidate: checked,
+    });
+    setValue("password", checked ? demoAccount.password : "", {
+      shouldValidate: checked,
+    });
+  }
 
   useEffect(() => {
     if (!loading && user && isAdmin) {
@@ -85,8 +102,9 @@ export default function AdminLoginPage() {
               id="email"
               type="email"
               autoComplete="email"
+              readOnly={useDemo}
               {...register("email", { required: "กรุณากรอกอีเมล" })}
-              className={inputClassName}
+              className={`${inputClassName} read-only:text-muted`}
             />
           </FormField>
 
@@ -99,10 +117,32 @@ export default function AdminLoginPage() {
               id="password"
               type="password"
               autoComplete="current-password"
+              readOnly={useDemo}
               {...register("password", { required: "กรุณากรอกรหัสผ่าน" })}
-              className={inputClassName}
+              className={`${inputClassName} read-only:text-muted`}
             />
           </FormField>
+          {hasDemoAccount && (
+            <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl bg-carrot-soft px-4 py-3">
+              <span>
+                <span className="block text-sm font-medium text-ink">
+                  ใช้บัญชี demo
+                </span>
+                <span className="block text-xs text-muted">
+                  เพื่อทดลองอนุมัติคำร้อง ข้อมูลภายในระบบ
+                  <br />
+                  จะถูกรีเซ็ตใหม่ทุกเที่ยงคืน
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                checked={useDemo}
+                onChange={(event) => toggleDemo(event.target.checked)}
+                className="peer sr-only"
+              />
+              <span className="relative h-6 w-11 shrink-0 rounded-full bg-line transition peer-checked:bg-carrot after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition peer-checked:after:translate-x-5" />
+            </label>
+          )}
 
           {loginError && (
             <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">

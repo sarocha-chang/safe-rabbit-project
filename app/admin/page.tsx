@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/components/admin/AuthProvider";
+import DemoDataPanel from "@/components/admin/DemoDataPanel";
 import StatCard from "@/components/admin/StatCard";
 import { getApplications } from "@/lib/application-service";
 import { formatThaiDate } from "@/lib/rabbit-display";
@@ -26,11 +27,12 @@ const statusBarItems: {
 ];
 
 export default function AdminDashboardPage() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [rabbits, setRabbits] = useState<Rabbit[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     async function loadData() {
@@ -49,7 +51,7 @@ export default function AdminDashboardPage() {
     }
 
     loadData();
-  }, []);
+  }, [reloadKey]);
 
   const countRabbits = (status: RabbitStatus) => {
     return rabbits.filter((rabbit) => rabbit.status === status).length;
@@ -263,6 +265,13 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </section>
+
+      {role === "owner" && (
+        <DemoDataPanel
+          rabbits={rabbits}
+          onReset={() => setReloadKey((key) => key + 1)}
+        />
+      )}
     </div>
   );
 }

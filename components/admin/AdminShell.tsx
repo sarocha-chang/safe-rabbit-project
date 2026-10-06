@@ -22,7 +22,7 @@ interface AdminShellProps {
 }
 
 export default function AdminShell({ children }: AdminShellProps) {
-  const { user, isAdmin, loading, logout } = useAuth();
+  const { user, isAdmin, role, loading, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -77,7 +77,7 @@ export default function AdminShell({ children }: AdminShellProps) {
               <span className="h-2.5 w-2.5 rounded-full bg-carrot" />
               Rabbit House
               <span className="rounded-full bg-carrot-soft px-2 py-0.5 text-xs text-carrot-dark">
-                Admin
+                {role === "demo" ? "Demo" : "Admin"}
               </span>
             </Link>
 
