@@ -7,6 +7,33 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    function isShortText(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isValidNewApplication(data) {
+      return data.keys().hasOnly([
+          "rabbitId", "rabbitName", "applicationType", "fullName", "occupation",
+          "phone", "email", "introduction", "housingType", "keepIndoor",
+          "hasAirCon", "acceptCosts", "canVisitVet", "status", "createdAt"
+        ])
+        && exists(/databases/$(database)/documents/rabbits/$(data.rabbitId))
+        && isShortText(data.rabbitName, 100)
+        && data.applicationType in ["adopt", "sponsor"]
+        && isShortText(data.fullName, 100)
+        && isShortText(data.occupation, 100)
+        && isShortText(data.phone, 20)
+        && isShortText(data.email, 100)
+        && isShortText(data.introduction, 2000)
+        && isShortText(data.housingType, 50)
+        && data.keepIndoor in ["yes", "no"]
+        && data.hasAirCon in ["yes", "no"]
+        && data.acceptCosts == true
+        && data.canVisitVet == true
+        && data.status == "pending"
+        && data.createdAt == request.time;
+    }
+
     match /rabbits/{rabbitId} {
       allow read: if true;
       allow write: if isAdmin();
@@ -15,6 +42,11 @@ service cloud.firestore {
     match /admins/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
+    }
+
+    match /applications/{applicationId} {
+      allow create: if isValidNewApplication(request.resource.data);
+      allow read, update, delete: if isAdmin();
     }
   }
 }
