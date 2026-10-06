@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isOwner() {
+      return isAdmin()
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "owner";
+    }
+
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    function isShortText(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isValidNewApplication(data) {
+      return data.keys().hasOnly([
+          "rabbitId", "rabbitName", "applicationType", "fullName", "occupation",
+          "phone", "email", "introduction", "housingType", "keepIndoor",
+          "hasAirCon", "acceptCosts", "canVisitVet", "status", "createdAt"
+        ])
+        && exists(/databases/$(database)/documents/rabbits/$(data.rabbitId))
+        && isShortText(data.rabbitName, 100)
+        && data.applicationType in ["adopt", "sponsor"]
+        && isShortText(data.fullName, 100)
+        && isShortText(data.occupation, 100)
+        && isShortText(data.phone, 20)
+        && isShortText(data.email, 100)
+        && isShortText(data.introduction, 2000)
+        && isShortText(data.housingType, 50)
+        && data.keepIndoor in ["yes", "no"]
+        && data.hasAirCon in ["yes", "no"]
+        && data.acceptCosts == true
+        && data.canVisitVet == true
+        && data.status == "pending"
+        && data.createdAt == request.time;
+    }
+
+    match /rabbits/{rabbitId} {
+      allow read: if true;
+      allow create, delete: if isOwner();
+      allow update: if isOwner()
+        || (isAdmin()
+          && onlyChanges(["status", "adoptedDate", "updatedAt"])
+          && request.resource.data.status in ["available", "sponsored", "adopted"]);
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /applications/{applicationId} {
+      allow create: if isValidNewApplication(request.resource.data);
+      allow read: if isAdmin();
+      allow update: if isOwner()
+        || (isAdmin()
+          && onlyChanges(["status", "reviewedAt", "autoRejected"])
+          && request.resource.data.status in ["approved", "rejected"]);
+      allow delete: if isOwner();
+    }
+
+    match /demoDefaults/{rabbitId} {
+      allow read, write: if isOwner();
+    }
+  }
+}

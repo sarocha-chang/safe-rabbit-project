@@ -50,5 +50,8 @@ export function formatAgeMonth(ageMonth: number): string {
 
 export function getMonthsSince(date: Date): number {
   const now = new Date();
-  return (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+  return (
+    (now.getFullYear() - date.getFullYear()) * 12 +
+    (now.getMonth() - date.getMonth())
+  );
 }

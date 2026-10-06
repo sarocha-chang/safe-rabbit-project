@@ -1,9 +1,5 @@
 export type RabbitStatus =
-  | "available"
-  | "adopted"
-  | "sponsored"
-  | "passed_away"
-  | "resident";
+  "available" | "adopted" | "sponsored" | "passed_away" | "resident";
 
 export type RabbitGender = "male" | "female";
 
