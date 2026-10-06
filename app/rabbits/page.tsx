@@ -13,7 +13,7 @@ export default async function RabbitsPage() {
         description="น้องทุกตัวได้รับการตรวจสุขภาพและดูแลจากคาเฟ่ ถ้าสนใจน้องตัวไหน กดเข้าไปดูเรื่องราวของน้องได้เลย"
       />
 
-      <RabbitFilter rabbits={rabbits} />
+      <RabbitFilter rabbits={rabbits} showStatus={true} sortBy="intakeDate" />
     </div>
   );
 }

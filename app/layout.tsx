@@ -30,7 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     // [scrollbar-gutter:stable] จองที่ให้ scrollbar ไว้ทุกหน้า nav จะได้ไม่ขยับตอนเปลี่ยนหน้า
     <html
       lang="th"
-      className={`${plexThai.variable} ${prompt.variable} [scrollbar-gutter:stable]`}
+      className={`${plexThai.variable} ${prompt.variable} scrollbar-gutter-stable`}
     >
       <body className="bg-white font-sans text-ink">
         <Navbar />
