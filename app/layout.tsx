@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans_Thai, Prompt } from "next/font/google";
 import "./globals.css";
 
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
 const plexThai = IBM_Plex_Sans_Thai({
@@ -32,11 +33,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
       lang="th"
       className={`${plexThai.variable} ${prompt.variable} scrollbar-gutter-stable`}
     >
-      <body className="bg-white font-sans text-ink">
+      {/* flex-col + flex-1 ที่ main ทำให้ footer อยู่ล่างจอเสมอ แม้หน้านั้นเนื้อหาน้อย */}
+      <body className="flex min-h-screen flex-col bg-white font-sans text-ink">
         <Navbar />
-        <main className="mx-auto w-full max-w-6xl px-5 py-7 md:px-8 md:py-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-16 pt-7 md:px-8 md:pb-20 md:pt-10">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
