@@ -20,7 +20,7 @@ export default function RabbitCard({ rabbit }: RabbitCardProps) {
     >
       <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-cream">
         <Image
-          src={rabbit.coverImage || "/placeholder-rabbit.jpg"}
+          src={rabbit.coverImage || "/placeholder-rabbit.svg"}
           alt={`รูปของ ${rabbit.name}`}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

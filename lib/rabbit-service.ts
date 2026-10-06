@@ -16,7 +16,6 @@ import type { Rabbit } from "@/types/rabbit";
 
 const rabbitsCollection = collection(db, "rabbits");
 
-// แปลงข้อมูลจาก Firestore ให้เป็น Rabbit (เปลี่ยน Timestamp เป็น Date)
 function toRabbit(snapshot: DocumentSnapshot): Rabbit {
   const data = snapshot.data()!;
 
@@ -35,7 +34,6 @@ async function getRabbits(q: Query): Promise<Rabbit[]> {
   return snapshot.docs.map(toRabbit);
 }
 
-// ดึงน้องตัวเดียวจาก id ถ้าไม่เจอจะได้ null
 export async function getRabbitById(id: string): Promise<Rabbit | null> {
   const snapshot = await getDoc(doc(db, "rabbits", id));
   return snapshot.exists() ? toRabbit(snapshot) : null;
@@ -66,11 +64,11 @@ export function getAdoptedRabbits() {
   );
 }
 
-export function getCafeStaffRabbits() {
+export function getResidentRabbits() {
   return getRabbits(
     query(
       rabbitsCollection,
-      where("status", "==", "cafe_staff"),
+      where("status", "==", "resident"),
       where("isActive", "==", true),
     ),
   );

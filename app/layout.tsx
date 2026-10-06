@@ -18,8 +18,12 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  title: "Safe Rabbit Project",
-  description: "Rabbit adoption project",
+  title: {
+    default: "Rabbit House",
+    template: "%s | Rabbit House",
+  },
+  description:
+    "A forever home for every rabbit. เว็บไซต์ช่วยหาบ้านให้น้องกระต่ายที่ถูกทิ้ง หรือกำลังรอครอบครัวใหม่",
 };
 
 interface RootLayoutProps {
@@ -28,12 +32,10 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    // [scrollbar-gutter:stable] จองที่ให้ scrollbar ไว้ทุกหน้า nav จะได้ไม่ขยับตอนเปลี่ยนหน้า
     <html
       lang="th"
       className={`${plexThai.variable} ${prompt.variable} scrollbar-gutter-stable`}
     >
-      {/* flex-col + flex-1 ที่ main ทำให้ footer อยู่ล่างจอเสมอ แม้หน้านั้นเนื้อหาน้อย */}
       <body className="flex min-h-screen flex-col bg-white font-sans text-ink">
         <Navbar />
         <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-16 pt-7 md:px-8 md:pb-20 md:pt-10">

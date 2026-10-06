@@ -1,20 +1,31 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+
+import MultiSelectDropdown from "@/components/MultiSelectDropdown";
 import RabbitGrid from "@/components/RabbitGrid";
+import { rabbitBreeds } from "@/lib/rabbit-breeds";
 import type { Rabbit } from "@/types/rabbit";
 
 interface RabbitFilterProps {
   rabbits: Rabbit[];
-  showStatus?: boolean; // โชว์ filter สถานะไหม
-  sortBy?: "intakeDate" | "adoptedDate"; // เรียงตามวันที่ช่องไหน ถ้าไม่ใส่จะไม่โชว์ช่องเรียง
+  sortBy: "intakeDate" | "adoptedDate";
+  showStatus?: boolean;
+  showNeutered?: boolean;
+  showBreed?: boolean;
 }
 
-// ตัวเลือกแรกของแต่ละกลุ่มคือค่าเริ่มต้น
 const genderOptions = [
   { label: "ทั้งหมด", value: "all" },
   { label: "เพศผู้", value: "male" },
   { label: "เพศเมีย", value: "female" },
+];
+
+const neuteredOptions = [
+  { label: "ทั้งหมด", value: "all" },
+  { label: "ทำหมันแล้ว", value: "yes" },
+  { label: "ยังไม่ได้ทำหมัน", value: "no" },
 ];
 
 const statusOptions = [
@@ -30,23 +41,36 @@ const sortOptions = [
 
 export default function RabbitFilter({
   rabbits,
-  showStatus = true,
   sortBy,
+  showStatus = false,
+  showNeutered = false,
+  showBreed = false,
 }: RabbitFilterProps) {
   const [gender, setGender] = useState("all");
+  const [neutered, setNeutered] = useState("all");
+  const [breeds, setBreeds] = useState<string[]>([]);
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("newest");
 
-  const isFiltered = gender !== "all" || status !== "all" || sort !== "newest";
+  const isFiltered =
+    gender !== "all" ||
+    neutered !== "all" ||
+    breeds.length > 0 ||
+    status !== "all" ||
+    sort !== "newest";
 
   const filteredRabbits = rabbits.filter((rabbit) => {
     const matchGender = gender === "all" || rabbit.gender === gender;
+    const matchNeutered =
+      neutered === "all" || rabbit.neutered === (neutered === "yes");
+    const matchBreed =
+      breeds.length === 0 ||
+      (rabbit.breeds ?? []).some((breed) => breeds.includes(breed));
     const matchStatus = status === "all" || rabbit.status === status;
-    return matchGender && matchStatus;
+    return matchGender && matchNeutered && matchBreed && matchStatus;
   });
 
   const sortedRabbits = [...filteredRabbits].sort((a, b) => {
-    if (!sortBy) return 0;
     const dateA = a[sortBy]?.getTime() ?? 0;
     const dateB = b[sortBy]?.getTime() ?? 0;
     return sort === "newest" ? dateB - dateA : dateA - dateB;
@@ -54,6 +78,8 @@ export default function RabbitFilter({
 
   const resetFilters = () => {
     setGender("all");
+    setNeutered("all");
+    setBreeds([]);
     setStatus("all");
     setSort("newest");
   };
@@ -61,23 +87,54 @@ export default function RabbitFilter({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        {/* มือถือ 2 คอลัมน์, จอใหญ่เรียงแถวเดียว */}
         <div className="grid grid-cols-2 gap-3 rounded-3xl border border-line bg-white p-4 shadow-sm sm:flex sm:flex-wrap sm:gap-4">
-          <FilterSelect label="เพศ" options={genderOptions} value={gender} onChange={setGender} />
+          <FilterSelect
+            label="เพศ"
+            options={genderOptions}
+            value={gender}
+            onChange={setGender}
+          />
+
+          {showNeutered && (
+            <FilterSelect
+              label="ทำหมัน"
+              options={neuteredOptions}
+              value={neutered}
+              onChange={setNeutered}
+            />
+          )}
+
+          {showBreed && (
+            <MultiSelectDropdown
+              label="สายพันธุ์"
+              options={rabbitBreeds}
+              selected={breeds}
+              onChange={setBreeds}
+            />
+          )}
 
           {showStatus && (
-            <FilterSelect label="สถานะ" options={statusOptions} value={status} onChange={setStatus} />
+            <FilterSelect
+              label="สถานะ"
+              options={statusOptions}
+              value={status}
+              onChange={setStatus}
+            />
           )}
 
-          {sortBy && (
-            <FilterSelect label="เรียงตามวันที่" options={sortOptions} value={sort} onChange={setSort} />
-          )}
+          <FilterSelect
+            label="เรียงตามวันที่"
+            options={sortOptions}
+            value={sort}
+            onChange={setSort}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-4 px-1">
-          <p className="text-sm text-muted">พบน้อง {sortedRabbits.length} ตัว</p>
+          <p className="text-sm text-muted">
+            พบน้อง {sortedRabbits.length} ตัว
+          </p>
 
-          {/* ยังไม่ได้เปลี่ยน filter = ปุ่มเทากดไม่ได้ */}
           <button
             onClick={resetFilters}
             disabled={!isFiltered}
@@ -88,7 +145,10 @@ export default function RabbitFilter({
         </div>
       </div>
 
-      <RabbitGrid rabbits={sortedRabbits} emptyText="ไม่พบน้องที่ตรงกับตัวกรอง" />
+      <RabbitGrid
+        rabbits={sortedRabbits}
+        emptyText="ไม่พบน้องที่ตรงกับตัวกรอง"
+      />
     </div>
   );
 }
@@ -101,7 +161,6 @@ interface FilterSelectProps {
 }
 
 function FilterSelect({ label, options, value, onChange }: FilterSelectProps) {
-  // ถ้าไม่ได้เลือกค่าเริ่มต้น (ตัวเลือกแรก) ให้ช่องเป็นสีส้ม จะได้รู้ว่ากำลังกรองอยู่
   const isActive = value !== options[0].value;
 
   return (
@@ -125,10 +184,10 @@ function FilterSelect({ label, options, value, onChange }: FilterSelectProps) {
           ))}
         </select>
 
-        {/* ลูกศรชี้ลง (select ที่ใส่ appearance-none จะไม่มีลูกศรเอง) */}
-        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-muted">
-          ▼
-        </span>
+        <ChevronDown
+          size={16}
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+        />
       </div>
     </label>
   );

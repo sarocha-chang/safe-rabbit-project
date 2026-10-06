@@ -3,7 +3,7 @@ export type RabbitStatus =
   | "adopted"
   | "sponsored"
   | "passed_away"
-  | "cafe_staff";
+  | "resident";
 
 export type RabbitGender = "male" | "female";
 

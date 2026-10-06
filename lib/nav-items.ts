@@ -1,4 +1,3 @@
-// เมนูของเว็บ (ใช้ใน Navbar)
 export const navItems = [
   {
     label: "หาบ้าน",
@@ -9,8 +8,8 @@ export const navItems = [
     href: "/rabbits/adopted",
   },
   {
-    label: "สตาฟคาเฟ่",
-    href: "/rabbits/cafe-staff",
+    label: "น้องประจำบ้าน",
+    href: "/rabbits/residents",
   },
   {
     label: "เกี่ยวกับเรา",
