@@ -13,7 +13,7 @@ export default function RabbitGallery({ name, coverImage, images }: RabbitGaller
   const allImages = [coverImage, ...(images ?? [])].filter(Boolean);
 
   if (allImages.length === 0) {
-    allImages.push("/placeholder-rabbit.jpg");
+    allImages.push("/placeholder-rabbit.svg");
   }
 
   const [activeIndex, setActiveIndex] = useState(0);

@@ -6,6 +6,7 @@ import {
   Database,
   Images,
   Mail,
+  Rabbit,
   SlidersHorizontal,
   Smartphone,
 } from "lucide-react";
@@ -16,29 +17,34 @@ import { contact } from "@/lib/contact";
 const features = [
   {
     icon: Database,
+    iconClassName: "bg-carrot-soft text-carrot-dark",
     title: "ข้อมูลจริงจาก Firebase",
     description:
       "ข้อมูลและรูปน้องเก็บใน Firestore กับ Storage แก้ข้อมูลใน Firebase แล้วหน้าเว็บอัปเดตตามอัตโนมัติ",
   },
   {
     icon: SlidersHorizontal,
+    iconClassName: "bg-amber-50 text-amber-700",
     title: "กรองและเรียงลำดับ",
     description:
       "กรองน้องตามเพศ การทำหมัน สายพันธุ์ และสถานะ เรียงตามวันที่ ใช้ component ตัวเดียวกันได้ทุกหน้า",
   },
   {
     icon: Images,
+    iconClassName: "bg-emerald-50 text-emerald-700",
     title: "แกลเลอรีรูป",
     description: "สลับรูปได้ทันทีด้วยการโหลดรอไว้ก่อน และกดดูรูปแบบเต็มจอได้",
   },
   {
     icon: ClipboardList,
+    iconClassName: "bg-sky-50 text-sky-700",
     title: "แบบฟอร์มขอรับเลี้ยง",
     description:
       "ตรวจข้อมูลทุกช่องด้วย React Hook Form และเลือกน้องให้อัตโนมัติเมื่อกดมาจากหน้าโปรไฟล์",
   },
   {
     icon: Smartphone,
+    iconClassName: "bg-cream text-brown",
     title: "Responsive",
     description: "ใช้งานได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์",
   },
@@ -67,10 +73,18 @@ export default function AboutPage() {
         description="A forever home for every rabbit. เว็บไซต์ตัวอย่างสำหรับช่วยหาบ้านให้น้องกระต่าย สร้างขึ้นเป็นผลงาน portfolio"
       />
 
-      <section className="rounded-3xl border border-line bg-white p-6 shadow-sm md:p-10">
-        <div className="space-y-4 md:text-lg">
-          <h2 className="font-heading text-2xl font-semibold text-ink">
-            ที่มาของโปรเจกต์
+      <section className="relative animate-fade-up overflow-hidden rounded-3xl border border-line bg-white p-6 shadow-sm motion-reduce:animate-none md:p-10">
+        <div className="absolute -right-12 -top-12 flex h-40 w-40 items-end justify-start rounded-full bg-carrot/15 p-10 text-carrot md:h-52 md:w-52 md:p-14">
+          <Rabbit size={36} />
+        </div>
+
+        <div className="relative space-y-4 md:text-lg">
+          <p className="text-sm font-medium text-carrot">Our story</p>
+          <h2 className="font-heading text-2xl font-semibold text-ink md:text-3xl">
+            <span className="relative isolate">
+              ที่มาของโปรเจกต์
+              <span className="absolute inset-x-0 bottom-0.5 -z-10 h-3 origin-left animate-draw-line rounded-full bg-carrot/20 motion-reduce:animate-none" />
+            </span>
           </h2>
           <p className="leading-relaxed text-muted">
             จุดเริ่มต้นของโปรเจกต์นี้ย้อนกลับไปตั้งแต่สมัยมัธยมปลาย
@@ -127,7 +141,9 @@ export default function AboutPage() {
               key={feature.title}
               className="flex gap-4 rounded-3xl border border-line bg-white p-6 shadow-sm"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-carrot-soft text-carrot-dark">
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${feature.iconClassName}`}
+              >
                 <feature.icon size={20} />
               </div>
               <div className="space-y-1">
@@ -162,7 +178,7 @@ export default function AboutPage() {
 
       <section
         id="contact"
-        className="scroll-mt-24 space-y-6 rounded-3xl bg-cream/50 p-6 text-center md:p-10"
+        className="scroll-mt-24 space-y-6 rounded-3xl bg-carrot-soft p-6 text-center md:p-10"
       >
         <div className="space-y-2">
           <h2 className="font-heading text-2xl font-semibold text-ink">

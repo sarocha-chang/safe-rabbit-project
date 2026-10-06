@@ -57,7 +57,7 @@ export default async function Home() {
           >
             <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-cream">
               <Image
-                src={featured.coverImage || "/placeholder-rabbit.jpg"}
+                src={featured.coverImage || "/placeholder-rabbit.svg"}
                 alt={`รูปของ ${featured.name}`}
                 fill
                 priority
