@@ -4,8 +4,8 @@ import Link from "next/link";
 import {
   formatAgeMonth,
   getRabbitGenderLabel,
-  getRabbitStatusLabel,
 } from "@/lib/rabbit-display";
+import StatusBadge from "@/components/StatusBadge";
 import type { Rabbit } from "@/types/rabbit";
 
 interface RabbitCardProps {
@@ -27,9 +27,9 @@ export default function RabbitCard({ rabbit }: RabbitCardProps) {
           className="object-cover transition duration-500 group-hover:scale-105"
         />
 
-        <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1 text-xs font-medium text-carrot-dark shadow-sm">
-          {getRabbitStatusLabel(rabbit.status)}
-        </span>
+        <div className="absolute left-3 top-3 shadow-sm">
+          <StatusBadge status={rabbit.status} />
+        </div>
       </div>
 
       <div className="space-y-1 px-2 pb-2 pt-4">

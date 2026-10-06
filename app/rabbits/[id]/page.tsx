@@ -2,13 +2,23 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import RabbitGallery from "@/components/RabbitGallery";
+import StatusBadge from "@/components/StatusBadge";
 import {
   formatAgeMonth,
   formatThaiDate,
+  getMonthsSince,
   getRabbitGenderLabel,
-  getRabbitStatusLabel,
 } from "@/lib/rabbit-display";
 import { getRabbitById } from "@/lib/rabbit-service";
+
+// ปุ่มกลับพาไปหน้ารายชื่อตามสถานะของน้อง
+const backLinks = {
+  available: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
+  sponsored: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
+  adopted: { href: "/rabbits/adopted", label: "กลับไปหน้าได้บ้านแล้ว" },
+  cafe_staff: { href: "/rabbits/cafe-staff", label: "กลับไปหน้าสตาฟคาเฟ่" },
+  passed_away: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
+};
 
 interface RabbitDetailPageProps {
   params: Promise<{ id: string }>;
@@ -26,14 +36,17 @@ export default async function RabbitDetailPage({
 
   const isLookingForHome =
     rabbit.status === "available" || rabbit.status === "sponsored";
+  const isCafeStaff = rabbit.status === "cafe_staff";
+  const backLink = backLinks[rabbit.status];
+  const monthsAtCafe = getMonthsSince(rabbit.intakeDate);
 
   return (
     <div className="space-y-6">
       <Link
-        href="/rabbits"
+        href={backLink.href}
         className="text-sm text-muted transition hover:text-carrot-dark"
       >
-        ← กลับไปหน้าหาบ้าน
+        ← {backLink.label}
       </Link>
 
       <div className="grid gap-10 md:grid-cols-2 md:gap-14">
@@ -42,9 +55,7 @@ export default async function RabbitDetailPage({
         {/* ข้อมูลน้อง */}
         <div className="space-y-6">
           <div className="space-y-3">
-            <span className="inline-block rounded-full bg-carrot-soft px-3 py-1 text-xs font-medium text-carrot-dark">
-              {getRabbitStatusLabel(rabbit.status)}
-            </span>
+            <StatusBadge status={rabbit.status} />
             <h1 className="font-heading text-4xl font-semibold text-ink">
               {rabbit.name}
             </h1>
@@ -89,6 +100,19 @@ export default async function RabbitDetailPage({
               >
                 ติดต่อคาเฟ่
               </Link>
+            </div>
+          )}
+
+          {isCafeStaff && (
+            <div className="rounded-3xl bg-cream p-6">
+              <p className="font-heading text-lg font-medium text-ink">
+                {monthsAtCafe < 1
+                  ? "เพิ่งมาอยู่กับคาเฟ่ได้ไม่ถึงเดือน"
+                  : `อยู่กับคาเฟ่มาแล้ว ${formatAgeMonth(monthsAtCafe)}`}
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                {rabbit.name}เป็นสตาฟประจำร้าน ไม่ได้เปิดให้รับเลี้ยง แต่แวะมาเจอตัวจริงได้ที่คาเฟ่
+              </p>
             </div>
           )}
         </div>
