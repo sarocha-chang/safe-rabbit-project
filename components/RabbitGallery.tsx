@@ -10,7 +10,6 @@ interface RabbitGalleryProps {
 }
 
 export default function RabbitGallery({ name, coverImage, images }: RabbitGalleryProps) {
-  // รวม cover กับรูปอื่นเป็น array เดียว โดยให้ cover อยู่ตัวแรก
   const allImages = [coverImage, ...(images ?? [])].filter(Boolean);
 
   if (allImages.length === 0) {
@@ -30,7 +29,6 @@ export default function RabbitGallery({ name, coverImage, images }: RabbitGaller
     setActiveIndex((index) => (index === allImages.length - 1 ? 0 : index + 1));
   }
 
-  // ตอนเปิดเต็มจอ: กด Esc เพื่อปิด, กดลูกศรซ้ายขวาเพื่อเลื่อนรูป และล็อกไม่ให้หน้าเว็บด้านหลังเลื่อน
   useEffect(() => {
     if (!isFullscreen) return;
 
@@ -51,7 +49,6 @@ export default function RabbitGallery({ name, coverImage, images }: RabbitGaller
 
   return (
     <div className="space-y-3">
-      {/* รูปใหญ่: วางทุกรูปซ้อนกันไว้ให้โหลดรอ แล้วโชว์แค่รูปที่ active จะได้สลับได้ทันที */}
       <button
         onClick={() => setIsFullscreen(true)}
         className="relative block aspect-square w-full cursor-zoom-in overflow-hidden rounded-3xl border border-line bg-cream shadow-sm"
@@ -73,7 +70,6 @@ export default function RabbitGallery({ name, coverImage, images }: RabbitGaller
         ))}
       </button>
 
-      {/* รูปย่อย */}
       {hasManyImages && (
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {allImages.map((image, index) => (
@@ -92,7 +88,6 @@ export default function RabbitGallery({ name, coverImage, images }: RabbitGaller
         </div>
       )}
 
-      {/* โหมดเต็มจอ */}
       {isFullscreen && (
         <div
           onClick={() => setIsFullscreen(false)}

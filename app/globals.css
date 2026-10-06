@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* สีและฟอนต์ของเว็บ ใช้ใน className ได้เลย เช่น text-ink, bg-cream, bg-carrot, font-heading */
 @theme {
   --color-cream: #f8f3ec;
   --color-line: #eee6dc;
@@ -13,4 +12,28 @@
 
   --font-sans: var(--font-plex-thai);
   --font-heading: var(--font-prompt);
+
+  --animate-fade-up: fade-up 0.8s ease-out both;
+  --animate-fade-up-late: fade-up 0.8s ease-out 0.25s both;
+  --animate-draw-line: draw-line 0.7s ease-out 0.9s both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes draw-line {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
 }

@@ -8,7 +8,7 @@ export default function Navbar() {
       <nav className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 px-5 py-3 md:h-16 md:flex-row md:justify-between md:py-0 md:px-8">
         <Link href="/" className="flex items-center gap-2 font-heading text-lg font-medium text-ink">
           <span className="h-2.5 w-2.5 rounded-full bg-carrot" />
-          Safe Rabbit
+          Rabbit House
         </Link>
 
         <div className="flex items-center gap-1">

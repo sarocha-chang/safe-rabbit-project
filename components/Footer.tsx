@@ -13,15 +13,14 @@ export default function Footer() {
             className="flex items-center gap-2 font-heading text-lg font-medium text-ink"
           >
             <span className="h-2.5 w-2.5 rounded-full bg-carrot" />
-            Safe Rabbit
+            Rabbit House
           </Link>
           <p className="text-sm leading-relaxed text-muted">
-            คาเฟ่กระต่ายที่ช่วยดูแลน้องที่ไม่มีที่ไป
+            บ้านพักที่ช่วยดูแลน้องกระต่ายที่ไม่มีที่ไป
             และหาครอบครัวใหม่ที่พร้อมดูแลตลอดชีวิต
           </p>
         </div>
 
-        {/* ฝั่งขวา: ช่องทางติดต่อ + ลิงก์หน้า About */}
         <div className="space-y-3">
           <p className="text-sm font-medium text-ink">ติดต่อ</p>
           <div className="flex flex-col gap-2">
@@ -54,7 +53,7 @@ export default function Footer() {
 
       <div className="border-t border-line">
         <p className="mx-auto w-full max-w-6xl px-5 py-4 text-xs text-muted md:px-8">
-          © {new Date().getFullYear()} Safe Rabbit Project · สร้างขึ้นเป็นผลงาน
+          © {new Date().getFullYear()} Rabbit House · สร้างขึ้นเป็นผลงาน
           portfolio
         </p>
       </div>

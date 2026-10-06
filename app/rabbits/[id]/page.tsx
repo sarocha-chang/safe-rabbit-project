@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -11,17 +12,30 @@ import {
 } from "@/lib/rabbit-display";
 import { getRabbitById } from "@/lib/rabbit-service";
 
-// ปุ่มกลับพาไปหน้ารายชื่อตามสถานะของน้อง
 const backLinks = {
   available: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
   sponsored: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
   adopted: { href: "/rabbits/adopted", label: "กลับไปหน้าได้บ้านแล้ว" },
-  cafe_staff: { href: "/rabbits/cafe-staff", label: "กลับไปหน้าสตาฟคาเฟ่" },
+  resident: { href: "/rabbits/residents", label: "กลับไปหน้าน้องประจำบ้าน" },
   passed_away: { href: "/rabbits", label: "กลับไปหน้าหาบ้าน" },
 };
 
 interface RabbitDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: RabbitDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const rabbit = await getRabbitById(id);
+
+  return {
+    title: rabbit ? `น้อง${rabbit.name}` : "ไม่พบน้อง",
+    description: rabbit?.motto,
+  };
 }
 
 export default async function RabbitDetailPage({
@@ -36,9 +50,9 @@ export default async function RabbitDetailPage({
 
   const isLookingForHome =
     rabbit.status === "available" || rabbit.status === "sponsored";
-  const isCafeStaff = rabbit.status === "cafe_staff";
+  const isResident = rabbit.status === "resident";
   const backLink = backLinks[rabbit.status];
-  const monthsAtCafe = getMonthsSince(rabbit.intakeDate);
+  const monthsAtHome = getMonthsSince(rabbit.intakeDate);
 
   return (
     <div className="space-y-6">
@@ -50,9 +64,12 @@ export default async function RabbitDetailPage({
       </Link>
 
       <div className="grid gap-10 md:grid-cols-2 md:gap-14">
-        <RabbitGallery name={rabbit.name} coverImage={rabbit.coverImage} images={rabbit.images} />
+        <RabbitGallery
+          name={rabbit.name}
+          coverImage={rabbit.coverImage}
+          images={rabbit.images}
+        />
 
-        {/* ข้อมูลน้อง */}
         <div className="space-y-6">
           <div className="space-y-3">
             <StatusBadge status={rabbit.status} />
@@ -93,25 +110,28 @@ export default async function RabbitDetailPage({
 
           {isLookingForHome && (
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-carrot-soft p-6">
-              <p className="text-sm text-ink">สนใจรับ{rabbit.name}ไปดูแลไหม?</p>
+              <p className="text-sm text-ink">
+                สนใจรับเลี้ยงหรืออุปถัมภ์{rabbit.name}ไหม?
+              </p>
               <Link
-                href="/about"
+                href={`/adopt?rabbit=${rabbit.id}`}
                 className="rounded-full bg-carrot px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-carrot-dark"
               >
-                ติดต่อคาเฟ่
+                สนใจรับเลี้ยง / อุปถัมภ์
               </Link>
             </div>
           )}
 
-          {isCafeStaff && (
+          {isResident && (
             <div className="rounded-3xl bg-cream p-6">
               <p className="font-heading text-lg font-medium text-ink">
-                {monthsAtCafe < 1
-                  ? "เพิ่งมาอยู่กับคาเฟ่ได้ไม่ถึงเดือน"
-                  : `อยู่กับคาเฟ่มาแล้ว ${formatAgeMonth(monthsAtCafe)}`}
+                {monthsAtHome < 1
+                  ? "เพิ่งมาอยู่กับเราได้ไม่ถึงเดือน"
+                  : `อยู่กับเรามาแล้ว ${formatAgeMonth(monthsAtHome)}`}
               </p>
               <p className="mt-1 text-sm text-muted">
-                {rabbit.name}เป็นสตาฟประจำร้าน ไม่ได้เปิดให้รับเลี้ยง แต่แวะมาเจอตัวจริงได้ที่คาเฟ่
+                {rabbit.name}เป็นน้องประจำบ้าน ไม่ได้เปิดให้รับเลี้ยง
+                แต่เป็นสมาชิกสำคัญของครอบครัว Rabbit House
               </p>
             </div>
           )}

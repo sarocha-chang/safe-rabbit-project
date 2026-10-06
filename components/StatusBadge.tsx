@@ -1,14 +1,13 @@
-import { Coffee, Flower2, HandHeart, Heart, House } from "lucide-react";
+import { Flower2, HandHeart, Heart, House, Sofa } from "lucide-react";
 
 import { getRabbitStatusLabel } from "@/lib/rabbit-display";
 import type { RabbitStatus } from "@/types/rabbit";
 
-// แต่ละสถานะมี icon และสีของตัวเอง
 const statusStyles = {
   available: { icon: House, className: "bg-carrot-soft text-carrot-dark" },
   sponsored: { icon: HandHeart, className: "bg-amber-50 text-amber-700" },
   adopted: { icon: Heart, className: "bg-emerald-50 text-emerald-700" },
-  cafe_staff: { icon: Coffee, className: "bg-cream text-brown" },
+  resident: { icon: Sofa, className: "bg-cream text-brown" },
   passed_away: { icon: Flower2, className: "bg-stone-100 text-stone-600" },
 };
 

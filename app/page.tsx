@@ -2,11 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import RabbitCard from "@/components/RabbitCard";
+import StatusBadge from "@/components/StatusBadge";
 import { formatThaiDate } from "@/lib/rabbit-display";
 import {
   getLatestAdoptedRabbits,
   getLatestAvailableRabbits,
 } from "@/lib/rabbit-service";
+
+export const revalidate = 60;
 
 export default async function Home() {
   const [latestAdopted, latestAvailable] = await Promise.all([
@@ -21,16 +24,23 @@ export default async function Home() {
       <section className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
         <div className="space-y-6">
           <span className="inline-block rounded-full bg-carrot-soft px-3 py-1 text-xs font-medium text-carrot-dark">
-            Safe Rabbit Project
+            A forever home for every rabbit
           </span>
           <h1 className="font-heading text-4xl font-semibold leading-tight text-ink md:text-5xl">
-            ทุกตัวควรได้มีบ้าน
-            <br />
-            ที่<span className="text-carrot">ปลอดภัย</span>
+            <span className="block animate-fade-up motion-reduce:animate-none">
+              ทุกตัวควรได้มีบ้าน
+            </span>
+            <span className="block animate-fade-up-late motion-reduce:animate-none">
+              ที่
+              <span className="relative isolate text-carrot">
+                ปลอดภัย
+                <span className="absolute inset-x-0 bottom-1 -z-10 h-3 origin-left animate-draw-line rounded-full bg-carrot/20 motion-reduce:animate-none" />
+              </span>
+            </span>
           </h1>
           <p className="max-w-md leading-relaxed text-muted">
-            คาเฟ่กระต่ายที่ดูแลน้องที่ถูกทิ้งหรือไม่มีที่ไป
-            พักฟื้น และช่วยหาครอบครัวใหม่ที่พร้อมดูแลตลอดชีวิต
+            บ้านพักของน้องกระต่ายที่ถูกทิ้งหรือไม่มีที่ไป ให้ได้พักฟื้น
+            และช่วยหาครอบครัวใหม่ที่พร้อมดูแลตลอดชีวิต
           </p>
           <Link
             href="/rabbits"
@@ -54,12 +64,18 @@ export default async function Home() {
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover transition duration-500 group-hover:scale-105"
               />
+              <div className="absolute left-3 top-3 shadow-sm">
+                <StatusBadge status={featured.status} />
+              </div>
             </div>
             <div className="flex items-baseline justify-between gap-4 px-2 pb-1 pt-3">
               <p className="text-sm text-muted">
-                ได้บ้านล่าสุด · <span className="text-ink">{featured.name}</span>
+                ได้บ้านล่าสุด ·{" "}
+                <span className="text-ink">{featured.name}</span>
               </p>
-              <p className="text-xs text-muted">{formatThaiDate(featured.adoptedDate)}</p>
+              <p className="text-xs text-muted">
+                {formatThaiDate(featured.adoptedDate)}
+              </p>
             </div>
           </Link>
         ) : (
