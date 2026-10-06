@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+import Dropdown from "@/components/Dropdown";
 import MultiSelectDropdown from "@/components/MultiSelectDropdown";
 import RabbitGrid from "@/components/RabbitGrid";
 import { rabbitBreeds } from "@/lib/rabbit-breeds";
@@ -164,31 +164,14 @@ function FilterSelect({ label, options, value, onChange }: FilterSelectProps) {
   const isActive = value !== options[0].value;
 
   return (
-    <label className="flex flex-col gap-1.5 sm:w-44">
+    <div className="flex flex-col gap-1.5 sm:w-44">
       <span className="px-1 text-xs text-muted">{label}</span>
-
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className={
-            isActive
-              ? "w-full cursor-pointer appearance-none rounded-full border border-carrot bg-carrot-soft py-2 pl-4 pr-9 text-sm text-carrot-dark focus:outline-none"
-              : "w-full cursor-pointer appearance-none rounded-full border border-line bg-cream py-2 pl-4 pr-9 text-sm text-ink transition hover:border-carrot focus:border-carrot focus:outline-none"
-          }
-        >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        <ChevronDown
-          size={16}
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
-        />
-      </div>
-    </label>
+      <Dropdown
+        options={options}
+        value={value}
+        onChange={onChange}
+        isActive={isActive}
+      />
+    </div>
   );
 }

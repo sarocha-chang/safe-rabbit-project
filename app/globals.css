@@ -15,7 +15,9 @@
 
   --animate-fade-up: fade-up 0.8s ease-out both;
   --animate-fade-up-late: fade-up 0.8s ease-out 0.25s both;
+  --animate-fade-up-slow: fade-up 0.9s ease-out 0.4s both;
   --animate-draw-line: draw-line 0.7s ease-out 0.9s both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
 
   @keyframes fade-up {
     from {
@@ -25,6 +27,15 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
