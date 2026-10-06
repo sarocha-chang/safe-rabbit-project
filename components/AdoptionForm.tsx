@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
+import Dropdown from "@/components/Dropdown";
 import FormField, { inputClassName } from "@/components/FormField";
 import { getRabbitStatusLabel } from "@/lib/rabbit-display";
 import type { RabbitStatus } from "@/types/rabbit";
@@ -65,6 +65,7 @@ export default function AdoptionForm({
 }: AdoptionFormProps) {
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<AdoptionFormValues>({
@@ -116,27 +117,24 @@ export default function AdoptionForm({
           htmlFor="rabbitId"
           error={errors.rabbitId?.message}
         >
-          <div className="relative">
-            <select
-              id="rabbitId"
-              defaultValue=""
-              {...register("rabbitId", { required: "กรุณาเลือกน้องที่สนใจ" })}
-              className={`${inputClassName} cursor-pointer appearance-none pr-10`}
-            >
-              <option value="" disabled>
-                — เลือกน้อง —
-              </option>
-              {rabbits.map((rabbit) => (
-                <option key={rabbit.id} value={rabbit.id}>
-                  {rabbit.name} ({getRabbitStatusLabel(rabbit.status)})
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              size={18}
-              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted"
-            />
-          </div>
+          <Controller
+            name="rabbitId"
+            control={control}
+            rules={{ required: "กรุณาเลือกน้องที่สนใจ" }}
+            render={({ field }) => (
+              <Dropdown
+                id="rabbitId"
+                size="md"
+                placeholder="— เลือกน้อง —"
+                value={field.value}
+                onChange={field.onChange}
+                options={rabbits.map((rabbit) => ({
+                  value: rabbit.id,
+                  label: `${rabbit.name} (${getRabbitStatusLabel(rabbit.status)})`,
+                }))}
+              />
+            )}
+          />
         </FormField>
 
         <FormField

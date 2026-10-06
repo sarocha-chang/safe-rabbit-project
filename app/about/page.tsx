@@ -13,6 +13,7 @@ import {
 
 import PageHeader from "@/components/PageHeader";
 import { contact } from "@/lib/contact";
+import { techStack } from "@/lib/tech-stack";
 
 const features = [
   {
@@ -48,16 +49,6 @@ const features = [
     title: "Responsive",
     description: "ใช้งานได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์",
   },
-];
-
-const techStack = [
-  "Next.js (App Router)",
-  "TypeScript",
-  "Tailwind CSS",
-  "React Hook Form",
-  "Firebase Firestore",
-  "Firebase Storage",
-  "Firebase App Hosting",
 ];
 
 export const metadata: Metadata = {
