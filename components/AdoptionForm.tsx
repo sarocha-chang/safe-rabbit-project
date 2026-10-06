@@ -1,11 +1,14 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import Dropdown from "@/components/Dropdown";
 import FormField, { inputClassName } from "@/components/FormField";
+import { createApplication } from "@/lib/application-service";
 import { getRabbitStatusLabel } from "@/lib/rabbit-display";
+import type { ApplicationInput } from "@/types/application";
 import type { RabbitStatus } from "@/types/rabbit";
 
 interface RabbitOption {
@@ -19,20 +22,7 @@ interface AdoptionFormProps {
   defaultRabbitId?: string;
 }
 
-interface AdoptionFormValues {
-  rabbitId: string;
-  applicationType: "adopt" | "sponsor";
-  fullName: string;
-  occupation: string;
-  phone: string;
-  email: string;
-  introduction: string;
-  housingType: string;
-  keepIndoor: "yes" | "no";
-  hasAirCon: "yes" | "no";
-  acceptCosts: boolean;
-  canVisitVet: boolean;
-}
+type AdoptionFormValues = Omit<ApplicationInput, "rabbitName">;
 
 const applicationTypes = [
   {
@@ -67,7 +57,7 @@ export default function AdoptionForm({
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<AdoptionFormValues>({
     defaultValues: { rabbitId: defaultRabbitId ?? "" },
   });
@@ -76,8 +66,19 @@ export default function AdoptionForm({
     null,
   );
 
-  const onSubmit = (data: AdoptionFormValues) => {
-    setSubmittedData(data);
+  const [submitError, setSubmitError] = useState("");
+
+  const onSubmit = async (data: AdoptionFormValues) => {
+    setSubmitError("");
+    const rabbitName =
+      rabbits.find((rabbit) => rabbit.id === data.rabbitId)?.name ?? "";
+
+    try {
+      await createApplication({ ...data, rabbitName });
+      setSubmittedData(data);
+    } catch {
+      setSubmitError("ส่งแบบฟอร์มไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    }
   };
 
   if (submittedData) {
@@ -87,9 +88,9 @@ export default function AdoptionForm({
           ขอบคุณที่สนใจน้องนะ 🐰
         </p>
         <p className="text-muted">
-          ได้รับข้อมูลของคุณ {submittedData.fullName} แล้ว
+          ได้รับคำร้องของคุณ {submittedData.fullName} แล้ว
           <br />
-          (ตอนนี้เป็นฟอร์มตัวอย่าง ยังไม่ได้ส่งข้อมูลจริง)
+          ทีมดูแลจะพิจารณาและติดต่อกลับเร็วๆ นี้
         </p>
         <button
           onClick={() => setSubmittedData(null)}
@@ -107,6 +108,14 @@ export default function AdoptionForm({
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-10 rounded-3xl border border-line bg-white p-6 shadow-sm md:p-10"
     >
+      <div className="flex gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">
+        <Info size={18} className="mt-0.5 shrink-0" />
+        <p>
+          นี่คือเว็บไซต์ตัวอย่าง กรุณาอย่ากรอกข้อมูลส่วนตัวจริง
+          ข้อมูลในแบบฟอร์มจะถูกล้างเป็นระยะ
+        </p>
+      </div>
+
       <section className="space-y-6">
         <h2 className="font-heading text-xl font-semibold text-ink">
           1. น้องที่สนใจ
@@ -366,18 +375,21 @@ export default function AdoptionForm({
           )}
         </div>
       </section>
-      <button
-        type="submit"
-        className="rounded-full bg-carrot px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-carrot-dark"
-      >
-        ส่งแบบฟอร์ม
-      </button>
+      <div className="space-y-3">
+        {submitError && (
+          <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+            {submitError}
+          </p>
+        )}
 
-      {submittedData && (
-        <pre className="rounded-2xl bg-cream p-4 text-xs text-ink">
-          {JSON.stringify(submittedData, null, 2)}
-        </pre>
-      )}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-full bg-carrot px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-carrot-dark disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSubmitting ? "กำลังส่ง..." : "ส่งแบบฟอร์ม"}
+        </button>
+      </div>
     </form>
   );
 }
