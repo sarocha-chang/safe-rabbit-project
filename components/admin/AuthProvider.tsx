@@ -9,6 +9,8 @@ import { auth } from "@/lib/firebase-auth";
 
 export type AdminRole = "owner" | "demo";
 
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
+
 interface AuthState {
   user: User | null;
   isAdmin: boolean;
@@ -36,8 +38,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let logoutTimer: ReturnType<typeof setTimeout> | undefined;
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      clearTimeout(logoutTimer);
       setLoading(true);
+
+      if (currentUser) {
+        const token = await currentUser.getIdTokenResult();
+        const expiresAt =
+          new Date(token.authTime).getTime() + SESSION_DURATION_MS;
+        const remaining = expiresAt - Date.now();
+
+        if (remaining <= 0) {
+          await signOut(auth);
+          return;
+        }
+
+        logoutTimer = setTimeout(() => signOut(auth), remaining);
+      }
+
       setUser(currentUser);
 
       if (!currentUser) {
@@ -59,7 +79,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(logoutTimer);
+      unsubscribe();
+    };
   }, []);
 
   async function logout() {

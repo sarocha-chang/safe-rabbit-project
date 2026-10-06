@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="flex flex-1 items-center justify-center bg-cream/40 px-5 py-16">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-sm animate-fade-up space-y-6 motion-reduce:animate-none">
         <div className="space-y-2 text-center">
           <Link
             href="/"

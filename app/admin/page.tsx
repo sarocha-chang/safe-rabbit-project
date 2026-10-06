@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       <div className="space-y-1">
         <p className="text-sm font-medium text-carrot">Dashboard</p>
-        <h1 className="font-heading text-3xl font-semibold text-ink">
+        <h1 className="font-heading text-2xl font-semibold text-ink md:text-3xl">
           ภาพรวม Rabbit House
         </h1>
         <p className="text-sm text-muted">
@@ -123,7 +123,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <section className="relative overflow-hidden rounded-3xl bg-carrot p-6 text-white shadow-sm md:p-8 lg:col-span-2">
+        <section className="relative overflow-hidden rounded-3xl bg-carrot p-5 text-white shadow-sm md:p-8 lg:col-span-2">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
           <div className="absolute -bottom-16 right-16 h-32 w-32 rounded-full bg-white/10" />
 
@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
               <p className="text-sm text-white/80">
                 น้องที่อยู่ในการดูแลตอนนี้
               </p>
-              <p className="font-heading text-5xl font-semibold">
+              <p className="font-heading text-4xl font-semibold md:text-5xl">
                 {inCareTotal}
                 <span className="ml-2 text-lg font-normal text-white/80">
                   ตัว
@@ -140,11 +140,11 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
               {inCareStats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl bg-white/15 px-4 py-2"
+                  className="rounded-2xl bg-white/15 px-3 py-2 sm:px-4"
                 >
                   <p className="text-xs text-white/80">{stat.label}</p>
                   <p className="font-heading text-xl font-semibold">
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm text-muted">คำร้องรอพิจารณา</p>
-              <p className="font-heading text-5xl font-semibold text-ink">
+              <p className="font-heading text-4xl font-semibold text-ink md:text-5xl">
                 {pendingCount}
               </p>
             </div>

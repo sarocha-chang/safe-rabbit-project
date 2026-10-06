@@ -14,7 +14,7 @@ export default function StatCard({
   iconClassName = "bg-cream text-brown",
 }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-3xl border border-line bg-white p-5 shadow-sm">
+    <div className="flex items-center gap-4 rounded-3xl border border-line bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${iconClassName}`}
       >
