@@ -19,7 +19,7 @@ export default function RabbitGrid({
   }
 
   return (
-    <div className="grid animate-fade-in gap-6 motion-reduce:animate-none sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {rabbits.map((rabbit) => (
         <RabbitCard key={rabbit.id} rabbit={rabbit} />
       ))}
