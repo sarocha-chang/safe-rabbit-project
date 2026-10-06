@@ -1,4 +1,4 @@
-// เมนูของเว็บ ใช้ร่วมกันทั้ง Navbar และ Footer
+// เมนูของเว็บ (ใช้ใน Navbar)
 export const navItems = [
   {
     label: "หาบ้าน",

@@ -1,6 +1,7 @@
+import { Briefcase, Info, Mail } from "lucide-react";
 import Link from "next/link";
 
-import { navItems } from "@/lib/nav-items";
+import { contact } from "@/lib/contact";
 
 export default function Footer() {
   return (
@@ -20,17 +21,35 @@ export default function Footer() {
           </p>
         </div>
 
-        <nav className="flex flex-wrap gap-x-6 gap-y-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-muted transition hover:text-carrot-dark"
+        {/* ฝั่งขวา: ช่องทางติดต่อ + ลิงก์หน้า About */}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-ink">ติดต่อ</p>
+          <div className="flex flex-col gap-2">
+            <a
+              href={`mailto:${contact.email}`}
+              className="inline-flex items-center gap-2 text-sm text-muted transition hover:text-carrot-dark"
             >
-              {item.label}
+              <Mail size={16} />
+              {contact.email}
+            </a>
+            <a
+              href={contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-muted transition hover:text-carrot-dark"
+            >
+              <Briefcase size={16} />
+              LinkedIn
+            </a>
+            <Link
+              href="/about"
+              className="inline-flex items-center gap-2 text-sm text-muted transition hover:text-carrot-dark"
+            >
+              <Info size={16} />
+              เกี่ยวกับโปรเจกต์
             </Link>
-          ))}
-        </nav>
+          </div>
+        </div>
       </div>
 
       <div className="border-t border-line">
