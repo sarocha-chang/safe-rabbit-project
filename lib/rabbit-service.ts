@@ -1,10 +1,13 @@
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   limit,
   orderBy,
   query,
   where,
+  type DocumentSnapshot,
   type Query,
 } from "firebase/firestore";
 
@@ -13,22 +16,29 @@ import type { Rabbit } from "@/types/rabbit";
 
 const rabbitsCollection = collection(db, "rabbits");
 
-// ดึงข้อมูลจาก Firestore แล้วแปลง Timestamp ให้เป็น Date
+// แปลงข้อมูลจาก Firestore ให้เป็น Rabbit (เปลี่ยน Timestamp เป็น Date)
+function toRabbit(snapshot: DocumentSnapshot): Rabbit {
+  const data = snapshot.data()!;
+
+  return {
+    ...data,
+    id: snapshot.id,
+    intakeDate: data.intakeDate?.toDate(),
+    adoptedDate: data.adoptedDate ? data.adoptedDate.toDate() : null,
+    createdAt: data.createdAt?.toDate(),
+    updatedAt: data.updatedAt?.toDate(),
+  } as Rabbit;
+}
+
 async function getRabbits(q: Query): Promise<Rabbit[]> {
   const snapshot = await getDocs(q);
+  return snapshot.docs.map(toRabbit);
+}
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-
-    return {
-      ...data,
-      id: doc.id,
-      intakeDate: data.intakeDate?.toDate(),
-      adoptedDate: data.adoptedDate ? data.adoptedDate.toDate() : null,
-      createdAt: data.createdAt?.toDate(),
-      updatedAt: data.updatedAt?.toDate(),
-    } as Rabbit;
-  });
+// ดึงน้องตัวเดียวจาก id ถ้าไม่เจอจะได้ null
+export async function getRabbitById(id: string): Promise<Rabbit | null> {
+  const snapshot = await getDoc(doc(db, "rabbits", id));
+  return snapshot.exists() ? toRabbit(snapshot) : null;
 }
 
 export function getAllRabbits() {

@@ -47,3 +47,9 @@ export function formatAgeMonth(ageMonth: number): string {
 
   return `${years} ปี ${months} เดือน`;
 }
+
+// นับว่าผ่านมากี่เดือนแล้วนับจากวันที่ส่งเข้ามา
+export function getMonthsSince(date: Date): number {
+  const now = new Date();
+  return (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+}

@@ -17,7 +17,7 @@ export default async function Home() {
   const featured = latestAdopted[0];
 
   return (
-    <div className="space-y-24">
+    <div className="space-y-16 md:space-y-20">
       <section className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
         <div className="space-y-6">
           <span className="inline-block rounded-full bg-carrot-soft px-3 py-1 text-xs font-medium text-carrot-dark">
