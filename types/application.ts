@@ -22,4 +22,6 @@ export interface Application extends ApplicationInput {
   id: string;
   status: ApplicationStatus;
   createdAt: Date;
+  reviewedAt: Date | null;
+  autoRejected?: boolean;
 }

@@ -7,7 +7,15 @@ import { useEffect } from "react";
 
 import { useAuth } from "@/components/admin/AuthProvider";
 
-const adminNavItems = [{ label: "Dashboard", href: "/admin" }];
+const adminNavItems = [
+  { label: "Dashboard", href: "/admin" },
+  { label: "คำร้อง", href: "/admin/applications" },
+];
+
+function isActivePath(pathname: string, href: string) {
+  if (href === "/admin") return pathname === "/admin";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -79,7 +87,7 @@ export default function AdminShell({ children }: AdminShellProps) {
                   key={item.href}
                   href={item.href}
                   className={
-                    pathname === item.href
+                    isActivePath(pathname, item.href)
                       ? "rounded-full bg-cream px-3 py-1.5 text-sm text-ink"
                       : "rounded-full px-3 py-1.5 text-sm text-muted transition hover:bg-cream hover:text-ink"
                   }
