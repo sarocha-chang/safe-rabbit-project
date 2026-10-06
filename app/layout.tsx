@@ -27,10 +27,14 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="th" className={`${plexThai.variable} ${prompt.variable}`}>
+    // [scrollbar-gutter:stable] จองที่ให้ scrollbar ไว้ทุกหน้า nav จะได้ไม่ขยับตอนเปลี่ยนหน้า
+    <html
+      lang="th"
+      className={`${plexThai.variable} ${prompt.variable} [scrollbar-gutter:stable]`}
+    >
       <body className="bg-white font-sans text-ink">
         <Navbar />
-        <main className="mx-auto w-full max-w-6xl px-5 py-12 md:px-8 md:py-16">
+        <main className="mx-auto w-full max-w-6xl px-5 py-7 md:px-8 md:py-10">
           {children}
         </main>
       </body>
