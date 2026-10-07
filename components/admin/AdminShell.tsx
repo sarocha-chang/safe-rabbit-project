@@ -158,7 +158,7 @@ export default function AdminShell({ children }: AdminShellProps) {
 
       <main
         key={pathname}
-        className="mx-auto w-full max-w-6xl flex-1 animate-fade-in px-5 py-6 motion-reduce:animate-none md:px-8 md:py-10"
+        className="mx-auto w-full max-w-6xl flex-1 animate-fade-in px-5 pb-14 pt-6 motion-reduce:animate-none md:px-8 md:pb-20 md:pt-10"
       >
         {children}
       </main>
