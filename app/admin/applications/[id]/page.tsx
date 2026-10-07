@@ -26,6 +26,8 @@ import type { Rabbit } from "@/types/rabbit";
 
 type DialogType = "approve" | "reject" | null;
 
+const NOTE_MAX_LENGTH = 300;
+
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
 
@@ -36,6 +38,7 @@ export default function ApplicationDetailPage() {
   const [dialog, setDialog] = useState<DialogType>(null);
   const [otherPendingCount, setOtherPendingCount] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [reviewNote, setReviewNote] = useState("");
   const [message, setMessage] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -78,7 +81,7 @@ export default function ApplicationDetailPage() {
           "อนุมัติคำร้องเรียบร้อยแล้ว สถานะน้องบนหน้าเว็บจะอัปเดตภายใน 1 นาที",
         );
       } else {
-        await rejectApplication(application);
+        await rejectApplication(application, reviewNote);
         setMessage("บันทึกว่าไม่อนุมัติคำร้องนี้แล้ว");
       }
       setDialog(null);
@@ -106,6 +109,9 @@ export default function ApplicationDetailPage() {
 
   const isPending = application.status === "pending";
   const isAdoption = application.applicationType === "adopt";
+  const rejectReason = application.autoRejected
+    ? "ไม่อนุมัติอัตโนมัติ เพราะน้องได้บ้านจากคำร้องอื่นแล้ว"
+    : application.reviewNote;
   const rabbitCanBeApproved =
     rabbit?.status === "available" || rabbit?.status === "sponsored";
 
@@ -128,13 +134,17 @@ export default function ApplicationDetailPage() {
             {application.reviewedAt &&
               ` · พิจารณาเมื่อ ${formatThaiDate(application.reviewedAt)}`}
           </p>
-          {application.autoRejected && (
-            <p className="text-sm text-muted">
-              ไม่อนุมัติอัตโนมัติ เพราะน้องได้บ้านจากคำร้องอื่นแล้ว
-            </p>
-          )}
         </div>
       </div>
+
+      {rejectReason && (
+        <div className="space-y-1 rounded-2xl border border-line bg-white px-5 py-4">
+          <p className="text-sm font-medium text-ink">เหตุผลที่ไม่อนุมัติ</p>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-muted">
+            {rejectReason}
+          </p>
+        </div>
+      )}
 
       {message && (
         <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
@@ -236,7 +246,10 @@ export default function ApplicationDetailPage() {
                 อนุมัติ
               </button>
               <button
-                onClick={() => setDialog("reject")}
+                onClick={() => {
+                  setReviewNote("");
+                  setDialog("reject");
+                }}
                 className="flex w-full items-center justify-center gap-2 rounded-full border border-line px-5 py-3 text-sm text-ink transition hover:border-stone-400"
               >
                 <CircleX size={18} />
@@ -280,10 +293,32 @@ export default function ApplicationDetailPage() {
       <ConfirmDialog
         open={dialog === "reject"}
         title="ไม่อนุมัติคำร้องนี้?"
-        description={`คำร้องของ${application.fullName}จะถูกย้ายไปหมวด "ไม่อนุมัติ" สถานะของน้องไม่เปลี่ยนแปลง`}
+        description={
+          <div className="space-y-4">
+            <p>
+              คำร้องของ{application.fullName}จะถูกย้ายไปหมวด
+              &ldquo;ไม่อนุมัติ&rdquo; สถานะของน้องไม่เปลี่ยนแปลง
+            </p>
+            <label className="block space-y-2">
+              <span className="font-medium text-ink">เหตุผลที่ไม่อนุมัติ</span>
+              <textarea
+                value={reviewNote}
+                onChange={(event) => setReviewNote(event.target.value)}
+                maxLength={NOTE_MAX_LENGTH}
+                rows={3}
+                placeholder="เช่น ที่พักยังไม่เหมาะกับการเลี้ยงกระต่าย"
+                className="w-full resize-none rounded-2xl border border-line px-4 py-3 text-sm text-ink focus:border-carrot focus:outline-none"
+              />
+              <span className="block text-right text-xs">
+                {reviewNote.length}/{NOTE_MAX_LENGTH}
+              </span>
+            </label>
+          </div>
+        }
         confirmLabel="ยืนยันไม่อนุมัติ"
         tone="danger"
         loading={saving}
+        confirmDisabled={reviewNote.trim() === ""}
         onConfirm={handleConfirm}
         onCancel={() => setDialog(null)}
       />

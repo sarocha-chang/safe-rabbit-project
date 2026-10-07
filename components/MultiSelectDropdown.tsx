@@ -4,10 +4,13 @@ import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface MultiSelectDropdownProps {
-  label: string;
+  label?: string;
   options: string[];
   selected: string[];
   onChange: (selected: string[]) => void;
+  emptyText?: string;
+  showSelectedNames?: boolean;
+  className?: string;
 }
 
 export default function MultiSelectDropdown({
@@ -15,6 +18,9 @@ export default function MultiSelectDropdown({
   options,
   selected,
   onChange,
+  emptyText = "ทั้งหมด",
+  showSelectedNames = false,
+  className = "sm:w-44",
 }: MultiSelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,7 +29,10 @@ export default function MultiSelectDropdown({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -41,8 +50,11 @@ export default function MultiSelectDropdown({
   }
 
   return (
-    <div ref={containerRef} className="relative flex flex-col gap-1.5 sm:w-44">
-      <span className="px-1 text-xs text-muted">{label}</span>
+    <div
+      ref={containerRef}
+      className={`relative flex flex-col gap-1.5 ${className}`}
+    >
+      {label && <span className="px-1 text-xs text-muted">{label}</span>}
 
       <button
         type="button"
@@ -53,10 +65,20 @@ export default function MultiSelectDropdown({
             : "flex w-full items-center justify-between gap-2 rounded-full border border-line bg-cream py-2 pl-4 pr-3 text-sm text-ink transition hover:border-carrot"
         }
       >
-        <span className="truncate">{isActive ? `เลือก ${selected.length} แบบ` : "ทั้งหมด"}</span>
+        <span className="truncate">
+          {!isActive
+            ? emptyText
+            : showSelectedNames
+              ? selected.join(", ")
+              : `เลือก ${selected.length} แบบ`}
+        </span>
         <ChevronDown
           size={16}
-          className={isOpen ? "shrink-0 rotate-180 text-muted transition" : "shrink-0 text-muted transition"}
+          className={
+            isOpen
+              ? "shrink-0 rotate-180 text-muted transition"
+              : "shrink-0 text-muted transition"
+          }
         />
       </button>
 

@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
   writeBatch,
   type DocumentSnapshot,
@@ -90,13 +91,13 @@ export async function approveApplication(application: Application) {
   await batch.commit();
 }
 
-export async function rejectApplication(application: Application) {
-  const batch = writeBatch(db);
-
-  batch.update(doc(db, "applications", application.id), {
+export async function rejectApplication(
+  application: Application,
+  reviewNote: string,
+) {
+  await updateDoc(doc(db, "applications", application.id), {
     status: "rejected",
     reviewedAt: serverTimestamp(),
+    reviewNote: reviewNote.trim(),
   });
-
-  await batch.commit();
 }

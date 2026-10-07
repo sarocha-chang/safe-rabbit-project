@@ -17,6 +17,7 @@ import { useAuth } from "@/components/admin/AuthProvider";
 const adminNavItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "คำร้อง", href: "/admin/applications", icon: Inbox },
+  { label: "น้องๆ", href: "/admin/rabbits", icon: Rabbit },
 ];
 
 function isActivePath(pathname: string, href: string) {
@@ -136,7 +137,7 @@ export default function AdminShell({ children }: AdminShellProps) {
             </div>
           </div>
 
-          <nav className="mb-3 grid grid-cols-2 gap-1 rounded-full bg-cream p-1 md:hidden">
+          <nav className="mb-3 grid grid-cols-3 gap-1 rounded-full bg-cream p-1 md:hidden">
             {adminNavItems.map((item) => (
               <Link
                 key={item.href}
@@ -157,7 +158,7 @@ export default function AdminShell({ children }: AdminShellProps) {
 
       <main
         key={pathname}
-        className="mx-auto w-full max-w-6xl flex-1 animate-fade-in px-5 py-6 motion-reduce:animate-none md:px-8 md:py-10"
+        className="mx-auto w-full max-w-6xl flex-1 animate-fade-in px-5 pb-14 pt-6 motion-reduce:animate-none md:px-8 md:pb-20 md:pt-10"
       >
         {children}
       </main>

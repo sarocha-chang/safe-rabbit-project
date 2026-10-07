@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isOwner() {
+      return request.auth != null
+        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role == "owner";
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    function isDemoRabbit(rabbitId) {
+      return firestore.get(/databases/(default)/documents/rabbits/$(rabbitId)).data.createdByDemo == true;
+    }
+
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /rabbits/{rabbitId}/{fileName} {
+      allow read: if true;
+      allow delete: if isOwner() || (isAdmin() && isDemoRabbit(rabbitId));
+      allow create, update: if isValidImage()
+        && (isOwner() || (isAdmin() && isDemoRabbit(rabbitId)));
+    }
+  }
+}

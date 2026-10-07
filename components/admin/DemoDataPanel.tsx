@@ -106,6 +106,7 @@ export default function DemoDataPanel({
           <ul className="list-disc space-y-1 pl-5">
             <li>คำร้องทั้งหมดจะถูกลบ</li>
             <li>สถานะน้องทุกตัวจะกลับเป็นค่าเริ่มต้นที่บันทึกไว้</li>
+            <li>น้องที่สร้างโดยบัญชี demo จะถูกลบพร้อมรูปภาพ</li>
             <li>สร้างคำร้องตัวอย่างใหม่ 3 รายการ</li>
           </ul>
         }

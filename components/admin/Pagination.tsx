@@ -11,8 +11,6 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
-  if (totalPages <= 1) return null;
-
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   const arrowClassName =

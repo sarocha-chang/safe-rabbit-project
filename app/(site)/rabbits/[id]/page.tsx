@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -35,6 +36,7 @@ export async function generateMetadata({
   return {
     title: rabbit ? `น้อง${rabbit.name}` : "ไม่พบน้อง",
     description: rabbit?.motto,
+    robots: rabbit && !rabbit.isActive ? { index: false } : undefined,
   };
 }
 
@@ -49,13 +51,29 @@ export default async function RabbitDetailPage({
   }
 
   const isLookingForHome =
-    rabbit.status === "available" || rabbit.status === "sponsored";
+    rabbit.isActive &&
+    (rabbit.status === "available" || rabbit.status === "sponsored");
   const isResident = rabbit.status === "resident";
   const backLink = backLinks[rabbit.status];
   const monthsAtHome = getMonthsSince(rabbit.intakeDate);
 
   return (
     <div className="space-y-6">
+      {rabbit.createdByDemo ? (
+        <p className="flex gap-2 rounded-2xl bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          <Info size={18} className="mt-0.5 shrink-0" />
+          นี่คือข้อมูลตัวอย่างที่สร้างจากบัญชี demo ไม่แสดงในรายชื่อของเว็บ
+          และจะถูกลบเมื่อรีเซ็ตข้อมูล
+        </p>
+      ) : (
+        !rabbit.isActive && (
+          <p className="flex gap-2 rounded-2xl bg-stone-100 px-4 py-3 text-sm text-stone-700">
+            <Info size={18} className="mt-0.5 shrink-0" />
+            น้องตัวนี้ถูกซ่อนจากหน้าเว็บ
+          </p>
+        )
+      )}
+
       <Link
         href={backLink.href}
         className="text-sm text-muted transition hover:text-carrot-dark"
