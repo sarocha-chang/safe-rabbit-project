@@ -43,10 +43,19 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
 
+    function isHiddenDemoRabbit(data) {
+      return data.createdByDemo == true && data.isActive == false;
+    }
+
     match /rabbits/{rabbitId} {
       allow read: if true;
-      allow create, delete: if isOwner();
+      allow delete: if isOwner();
+      allow create: if isOwner()
+        || (isAdmin() && isHiddenDemoRabbit(request.resource.data));
       allow update: if isOwner()
+        || (isAdmin()
+          && resource.data.createdByDemo == true
+          && isHiddenDemoRabbit(request.resource.data))
         || (isAdmin()
           && onlyChanges(["status", "adoptedDate", "updatedAt"])
           && request.resource.data.status in ["available", "sponsored", "adopted"]);
@@ -62,8 +71,10 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow update: if isOwner()
         || (isAdmin()
-          && onlyChanges(["status", "reviewedAt", "autoRejected"])
-          && request.resource.data.status in ["approved", "rejected"]);
+          && onlyChanges(["status", "reviewedAt", "autoRejected", "reviewNote"])
+          && request.resource.data.status in ["approved", "rejected"]
+          && (!("reviewNote" in request.resource.data)
+            || isShortText(request.resource.data.reviewNote, 300)));
       allow delete: if isOwner();
     }
 

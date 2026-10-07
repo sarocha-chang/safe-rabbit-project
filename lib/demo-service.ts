@@ -5,8 +5,9 @@ import {
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
+import { deleteObject, listAll, ref } from "firebase/storage";
 
-import { db } from "./firebase";
+import { db, storage } from "./firebase";
 import type { ApplicationInput } from "@/types/application";
 import type { Rabbit, RabbitStatus } from "@/types/rabbit";
 
@@ -58,12 +59,14 @@ const sampleApplicants: Omit<ApplicationInput, "rabbitId" | "rabbitName">[] = [
 export async function saveDemoDefaults(rabbits: Rabbit[]) {
   const batch = writeBatch(db);
 
-  rabbits.forEach((rabbit) => {
-    batch.set(doc(db, "demoDefaults", rabbit.id), {
-      status: rabbit.status,
-      adoptedDate: rabbit.adoptedDate ?? null,
+  rabbits
+    .filter((rabbit) => !rabbit.createdByDemo)
+    .forEach((rabbit) => {
+      batch.set(doc(db, "demoDefaults", rabbit.id), {
+        status: rabbit.status,
+        adoptedDate: rabbit.adoptedDate ?? null,
+      });
     });
-  });
 
   await batch.commit();
 }
@@ -91,6 +94,11 @@ export async function resetDemoData() {
   });
 
   const rabbitsSnapshot = await getDocs(collection(db, "rabbits"));
+  const demoRabbits = rabbitsSnapshot.docs.filter(
+    (item) => item.data().createdByDemo === true,
+  );
+  demoRabbits.forEach((item) => batch.delete(item.ref));
+
   const lookingForHome = rabbitsSnapshot.docs.filter((item) => {
     const defaultStatus = defaultsSnapshot.docs
       .find((defaultItem) => defaultItem.id === item.id)
@@ -112,4 +120,15 @@ export async function resetDemoData() {
   }
 
   await batch.commit();
+
+  await Promise.all(demoRabbits.map((item) => deleteRabbitFolder(item.id)));
+}
+
+async function deleteRabbitFolder(rabbitId: string) {
+  try {
+    const folder = await listAll(ref(storage, `rabbits/${rabbitId}`));
+    await Promise.all(folder.items.map((item) => deleteObject(item)));
+  } catch {
+    return;
+  }
 }

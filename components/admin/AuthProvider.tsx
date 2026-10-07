@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 
+import { clearDemoGuideSeen } from "@/lib/demo-guide";
 import { db } from "@/lib/firebase";
 import { auth } from "@/lib/firebase-auth";
 
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(currentUser);
 
       if (!currentUser) {
+        clearDemoGuideSeen();
         setIsAdmin(false);
         setRole(null);
         setLoading(false);

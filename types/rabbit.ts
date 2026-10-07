@@ -19,6 +19,7 @@ export interface Rabbit {
   coverImage: string;
   images: string[];
   isActive: boolean;
+  createdByDemo?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
