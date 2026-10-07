@@ -11,6 +11,7 @@ import { useAuth } from "@/components/admin/AuthProvider";
 import Dropdown from "@/components/Dropdown";
 import FormField, { inputClassName } from "@/components/FormField";
 import MultiSelectDropdown from "@/components/MultiSelectDropdown";
+import SuccessDialog from "@/components/admin/SuccessDialog";
 import {
   createRabbit,
   updateRabbit,
@@ -22,6 +23,13 @@ import type { Rabbit, RabbitGender, RabbitStatus } from "@/types/rabbit";
 
 const NO_CONDITION = "ไม่มีโรค";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MIN_SAVING_TIME = 1000;
+
+const dateInputClassName = `${inputClassName} block min-h-11.5 min-w-0 appearance-none text-left`;
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const statusOptions: { label: string; value: RabbitStatus }[] = [
   { label: "หาบ้าน", value: "available" },
@@ -113,6 +121,7 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
   const [removedImageUrls, setRemovedImageUrls] = useState<string[]>([]);
   const [imageError, setImageError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [saved, setSaved] = useState(false);
 
   const status = useWatch({ control, name: "status" });
   const hasMedicalCondition = useWatch({
@@ -203,15 +212,18 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
     };
 
     try {
-      if (rabbit) {
-        await updateRabbit(rabbit.id, input, changes);
-      } else {
-        await createRabbit(input, changes);
-      }
-      router.push("/admin/rabbits");
+      const saveTask = rabbit
+        ? updateRabbit(rabbit.id, input, changes)
+        : createRabbit(input, changes);
+      await Promise.all([saveTask, wait(MIN_SAVING_TIME)]);
+      setSaved(true);
     } catch {
       setSubmitError("บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
     }
+  }
+
+  function closeSavedDialog() {
+    router.push("/admin/rabbits");
   }
 
   const coverPreview = newCover?.preview ?? coverImage;
@@ -307,7 +319,7 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
                 {...register("intakeDate", {
                   required: "กรุณาเลือกวันที่รับเข้า",
                 })}
-                className={inputClassName}
+                className={dateInputClassName}
               />
             </FormField>
           </div>
@@ -502,7 +514,7 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
                     value !== "" ||
                     "กรุณาเลือกวันที่ได้บ้าน",
                 })}
-                className={inputClassName}
+                className={dateInputClassName}
               />
             </FormField>
           )}
@@ -526,7 +538,7 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
             </label>
           ) : (
             <p className="rounded-2xl bg-cream/60 px-4 py-3 text-xs leading-relaxed text-muted">
-              น้องที่สร้างด้วยบัญชี demo จะไม่แสดงในรายชื่อบนหน้าเว็บ
+              ข้อมูลที่สร้างด้วยบัญชี demo จะไม่แสดงในรายชื่อบนหน้าเว็บ
               แต่เปิดดูหน้าโปรไฟล์ผ่านลิงก์ได้ และจะถูกลบเมื่อรีเซ็ตข้อมูล demo
             </p>
           )}
@@ -536,8 +548,8 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
           {!canSave && (
             <p className="flex gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
               <Lock size={16} className="mt-0.5 shrink-0" />
-              บัญชี demo แก้ไขได้เฉพาะน้องที่สร้างเอง
-              น้องตัวจริงดูข้อมูลได้อย่างเดียว
+              บัญชี demo แก้ไขได้เฉพาะข้อมูลที่สร้างเอง
+              ข้อมูลที่มีอยู่แล้วเปิดดูได้อย่างเดียว
             </p>
           )}
 
@@ -566,6 +578,13 @@ export default function RabbitForm({ rabbit }: RabbitFormProps) {
           </Link>
         </div>
       </div>
+
+      <SuccessDialog
+        open={saved}
+        title={isEditing ? "บันทึกการแก้ไขแล้ว" : "เพิ่มน้องเรียบร้อยแล้ว"}
+        description="ข้อมูลบนหน้าเว็บจะอัปเดตภายใน 1 นาที"
+        onClose={closeSavedDialog}
+      />
     </form>
   );
 }
