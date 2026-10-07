@@ -6,9 +6,19 @@ Rabbit House is a rabbit rescue and adoption website. It gathers rabbits that ar
 
 The idea started as a high school project to help an animal shelter in Chiang Mai. Years later, as a programmer with four rabbits of my own and inspired by a rabbit café that rescues and rehomes rabbits, I finally built it.
 
-🔗 **Live demo:** _coming soon_
+🔗 **Live demo:** [rabbit-house--safe-rabbit-project.asia-southeast1.hosted.app](https://rabbit-house--safe-rabbit-project.asia-southeast1.hosted.app)
 
 🔐 **Admin demo:** open `/admin/login` and switch on **"ใช้บัญชี demo"** to sign in with the demo account. Everything you try runs in a sandbox and never changes the real data.
+
+## Screenshots
+
+| Home | Rabbit profile |
+| --- | --- |
+| ![Home page](docs/screenshots/home.png) | ![Rabbit find home page](docs/screenshots/rabbit-find-home-page.png) |
+
+| Admin dashboard | Application review |
+| --- | --- |
+| ![Admin dashboard](docs/screenshots/admin-dashboard.png) | ![Rabbit List page](docs/screenshots/admin-rabbit-list.png) |
 
 ## Features
 
