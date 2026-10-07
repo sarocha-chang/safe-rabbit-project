@@ -24,4 +24,5 @@ export interface Application extends ApplicationInput {
   createdAt: Date;
   reviewedAt: Date | null;
   autoRejected?: boolean;
+  reviewNote?: string;
 }

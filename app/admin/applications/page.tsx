@@ -16,6 +16,11 @@ type TabValue = ApplicationStatus | "all";
 
 const PAGE_SIZE = 10;
 
+const sortOptions = [
+  { label: "คำร้องล่าสุด", value: "newest" },
+  { label: "คำร้องเก่า", value: "oldest" },
+];
+
 const tabs: { label: string; value: TabValue }[] = [
   { label: "รอพิจารณา", value: "pending" },
   { label: "อนุมัติแล้ว", value: "approved" },
@@ -30,6 +35,7 @@ export default function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState<TabValue>("pending");
   const [search, setSearch] = useState("");
   const [rabbitFilter, setRabbitFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -60,14 +66,20 @@ export default function ApplicationsPage() {
 
   const searchText = search.trim().toLowerCase();
 
-  const matchedApplications = applications.filter((application) => {
-    const matchSearch =
-      searchText === "" ||
-      application.fullName.toLowerCase().includes(searchText);
-    const matchRabbit =
-      rabbitFilter === "all" || application.rabbitId === rabbitFilter;
-    return matchSearch && matchRabbit;
-  });
+  const matchedApplications = applications
+    .filter((application) => {
+      const matchSearch =
+        searchText === "" ||
+        application.fullName.toLowerCase().includes(searchText);
+      const matchRabbit =
+        rabbitFilter === "all" || application.rabbitId === rabbitFilter;
+      return matchSearch && matchRabbit;
+    })
+    .sort((a, b) => {
+      const timeA = a.createdAt?.getTime() ?? 0;
+      const timeB = b.createdAt?.getTime() ?? 0;
+      return sortOrder === "newest" ? timeB - timeA : timeA - timeB;
+    });
 
   function countByTab(tab: TabValue) {
     if (tab === "all") return matchedApplications.length;
@@ -105,11 +117,18 @@ export default function ApplicationsPage() {
     setPage(1);
   }
 
-  const isFiltered = searchText !== "" || rabbitFilter !== "all";
+  function changeSortOrder(value: string) {
+    setSortOrder(value);
+    setPage(1);
+  }
+
+  const isFiltered =
+    searchText !== "" || rabbitFilter !== "all" || sortOrder !== "newest";
 
   function clearFilters() {
     setSearch("");
     setRabbitFilter("all");
+    setSortOrder("newest");
     setPage(1);
   }
 
@@ -147,44 +166,62 @@ export default function ApplicationsPage() {
         ))}
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
-          />
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => changeSearch(event.target.value)}
-            placeholder="ค้นหาชื่อผู้ขอ"
-            className="w-full rounded-full border border-line bg-white py-2 pl-10 pr-10 text-sm text-ink focus:border-carrot focus:outline-none"
-          />
-          {search && (
-            <button
-              onClick={() => changeSearch("")}
-              aria-label="ล้างคำค้นหา"
-              className="absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-cream hover:text-ink"
-            >
-              <X size={14} />
-            </button>
-          )}
+      <div className="space-y-3 rounded-3xl border border-line bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+            />
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => changeSearch(event.target.value)}
+              placeholder="ค้นหาชื่อผู้ขอ"
+              className="w-full rounded-full border border-line bg-white py-2 pl-10 pr-10 text-sm text-ink focus:border-carrot focus:outline-none"
+            />
+            {search && (
+              <button
+                onClick={() => changeSearch("")}
+                aria-label="ล้างคำค้นหา"
+                className="absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-cream hover:text-ink"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:flex">
+            <div className="sm:w-44">
+              <Dropdown
+                options={rabbitOptions}
+                value={rabbitFilter}
+                onChange={changeRabbitFilter}
+                isActive={rabbitFilter !== "all"}
+              />
+            </div>
+            <div className="sm:w-44">
+              <Dropdown
+                options={sortOptions}
+                value={sortOrder}
+                onChange={changeSortOrder}
+                isActive={sortOrder !== "newest"}
+              />
+            </div>
+          </div>
         </div>
-        <div className="sm:w-56">
-          <Dropdown
-            options={rabbitOptions}
-            value={rabbitFilter}
-            onChange={changeRabbitFilter}
-            isActive={rabbitFilter !== "all"}
-          />
+
+        <div className="flex items-center justify-between gap-4 px-1">
+          <p className="text-sm text-muted">
+            พบคำร้อง {tabApplications.length} รายการ
+          </p>
+          <button
+            onClick={clearFilters}
+            disabled={!isFiltered}
+            className="text-sm text-carrot-dark underline underline-offset-4 transition hover:text-carrot disabled:cursor-not-allowed disabled:text-muted disabled:no-underline disabled:opacity-50"
+          >
+            ล้างตัวกรอง
+          </button>
         </div>
-        <button
-          onClick={clearFilters}
-          disabled={!isFiltered}
-          className="text-sm text-carrot-dark underline underline-offset-4 transition hover:text-carrot disabled:cursor-not-allowed disabled:text-muted disabled:no-underline disabled:opacity-50"
-        >
-          ล้างตัวกรอง
-        </button>
       </div>
 
       {loading && <p className="text-sm text-muted">กำลังโหลดคำร้อง...</p>}

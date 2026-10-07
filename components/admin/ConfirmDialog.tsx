@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   confirmLabel: string;
   tone?: "primary" | "danger";
   loading?: boolean;
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -20,6 +21,7 @@ export default function ConfirmDialog({
   confirmLabel,
   tone = "primary",
   loading = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -65,7 +67,7 @@ export default function ConfirmDialog({
           </button>
           <button
             onClick={onConfirm}
-            disabled={loading}
+            disabled={loading || confirmDisabled}
             className={`rounded-full px-5 py-2.5 text-sm font-medium text-white transition disabled:opacity-60 ${confirmClassName}`}
           >
             {loading ? "กำลังบันทึก..." : confirmLabel}

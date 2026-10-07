@@ -71,8 +71,10 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow update: if isOwner()
         || (isAdmin()
-          && onlyChanges(["status", "reviewedAt", "autoRejected"])
-          && request.resource.data.status in ["approved", "rejected"]);
+          && onlyChanges(["status", "reviewedAt", "autoRejected", "reviewNote"])
+          && request.resource.data.status in ["approved", "rejected"]
+          && (!("reviewNote" in request.resource.data)
+            || isShortText(request.resource.data.reviewNote, 300)));
       allow delete: if isOwner();
     }
 
