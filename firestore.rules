@@ -43,10 +43,19 @@ service cloud.firestore {
         && data.createdAt == request.time;
     }
 
+    function isHiddenDemoRabbit(data) {
+      return data.createdByDemo == true && data.isActive == false;
+    }
+
     match /rabbits/{rabbitId} {
       allow read: if true;
-      allow create, delete: if isOwner();
+      allow delete: if isOwner();
+      allow create: if isOwner()
+        || (isAdmin() && isHiddenDemoRabbit(request.resource.data));
       allow update: if isOwner()
+        || (isAdmin()
+          && resource.data.createdByDemo == true
+          && isHiddenDemoRabbit(request.resource.data))
         || (isAdmin()
           && onlyChanges(["status", "adoptedDate", "updatedAt"])
           && request.resource.data.status in ["available", "sponsored", "adopted"]);

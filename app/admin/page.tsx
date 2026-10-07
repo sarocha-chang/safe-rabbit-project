@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
           getAllRabbits(),
           getApplications(),
         ]);
-        setRabbits(rabbitList);
+        setRabbits(rabbitList.filter((rabbit) => !rabbit.createdByDemo));
         setApplications(applicationList);
       } catch {
         setError("โหลดข้อมูลไม่สำเร็จ กรุณาลองรีเฟรชหน้าอีกครั้ง");
