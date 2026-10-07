@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -36,14 +37,14 @@ export default function ConfirmDialog({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, loading, onCancel]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const confirmClassName =
     tone === "danger"
       ? "bg-stone-700 hover:bg-stone-800"
       : "bg-carrot hover:bg-carrot-dark";
 
-  return (
+  return createPortal(
     <div
       onClick={() => !loading && onCancel()}
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-5"
@@ -74,6 +75,7 @@ export default function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

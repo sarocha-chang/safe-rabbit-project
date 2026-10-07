@@ -2,16 +2,17 @@
 
 import { CircleCheck, CircleX, FlaskConical, X } from "lucide-react";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 const canDo = [
   "อนุมัติหรือไม่อนุมัติคำร้อง แล้วดูสถานะน้องบนเว็บเปลี่ยนตาม",
-  "เพิ่มน้องใหม่ แก้ไขข้อมูล และอัปโหลดรูปของน้องที่สร้างเอง",
-  "เปิดดูหน้าโปรไฟล์ของน้องที่สร้างบนเว็บจริงผ่านปุ่ม ↗",
+  "เพิ่มน้องใหม่ แก้ไขข้อมูล และอัปโหลดรูป ในข้อมูลที่สร้างเอง",
+  "เปิดดูหน้าโปรไฟล์บนเว็บของข้อมูลที่สร้างเอง ผ่านปุ่มลูกศรในหน้าน้องๆ",
 ];
 
 const cannotDo = [
-  "แก้ไขข้อมูลหรือรูปของน้องตัวจริง (เปิดดูได้อย่างเดียว)",
-  "ซ่อนหรือลบข้อมูล และจัดการข้อมูล demo",
+  "แก้ไขข้อมูลที่มีอยู่แล้ว (เปิดดูได้อย่างเดียว)",
+  "ซ่อนหรือลบข้อมูล และรีเซ็ตข้อมูล demo",
 ];
 
 interface DemoGuideDialogProps {
@@ -34,9 +35,9 @@ export default function DemoGuideDialog({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4"
@@ -46,7 +47,7 @@ export default function DemoGuideDialog({
         aria-modal="true"
         aria-labelledby="demo-guide-title"
         onClick={(event) => event.stopPropagation()}
-        className="max-h-[90vh] w-full max-w-lg animate-fade-in space-y-5 overflow-y-auto rounded-3xl bg-white p-6 shadow-xl motion-reduce:animate-none md:p-8"
+        className="max-h-[85dvh] w-full max-w-lg animate-fade-in space-y-5 overflow-y-auto rounded-3xl bg-white p-6 shadow-xl motion-reduce:animate-none md:p-8"
       >
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-700">
@@ -111,6 +112,7 @@ export default function DemoGuideDialog({
           เริ่มลองใช้งาน
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
